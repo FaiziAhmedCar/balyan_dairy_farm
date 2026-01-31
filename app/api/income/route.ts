@@ -1,17 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Income } from "../../../app/types/income";
-
-// In-memory storage for Vercel serverless environment
-const incomeRecords: Income[] = [];
+import connectDB from "../../../app/lib/mongoose";
+import Income from "../../../app/models/Income";
 
 // GET /api/income - Get all income
 export async function GET() {
   try {
-    return NextResponse.json(
-      incomeRecords.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-      ),
-    );
+    await connectDB();
+    const income = await Income.find({}).sort({ date: -1 });
+
+    return NextResponse.json(income);
   } catch (error) {
     console.error("Error fetching income:", error);
     return NextResponse.json(
@@ -24,18 +21,19 @@ export async function GET() {
 // POST /api/income - Create new income
 export async function POST(request: NextRequest) {
   try {
+    await connectDB();
     const incomeData = await request.json();
 
-    const newIncome: Income = {
+    const newIncome = new Income({
       ...incomeData,
-      id: Date.now().toString(),
+      id: Date.now().toString(), // Keep string ID for frontend compatibility
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    };
+    });
 
-    incomeRecords.push(newIncome);
+    const savedIncome = await newIncome.save();
 
-    return NextResponse.json(newIncome, { status: 201 });
+    return NextResponse.json(savedIncome, { status: 201 });
   } catch (error) {
     console.error("Error creating income:", error);
     return NextResponse.json(
@@ -48,21 +46,25 @@ export async function POST(request: NextRequest) {
 // PUT /api/income - Update income
 export async function PUT(request: NextRequest) {
   try {
+    await connectDB();
     const { id, ...updates } = await request.json();
 
-    const index = incomeRecords.findIndex((item) => item.id === id);
-
-    if (index === -1) {
-      return NextResponse.json({ error: "Income not found" }, { status: 404 });
-    }
-
-    incomeRecords[index] = {
-      ...incomeRecords[index],
+    const updateData = {
       ...updates,
       updatedAt: new Date().toISOString(),
     };
 
-    return NextResponse.json(incomeRecords[index]);
+    const updatedIncome = await Income.findOneAndUpdate(
+      { id: id },
+      { $set: updateData },
+      { new: true },
+    );
+
+    if (!updatedIncome) {
+      return NextResponse.json({ error: "Income not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(updatedIncome);
   } catch (error) {
     console.error("Error updating income:", error);
     return NextResponse.json(
@@ -75,6 +77,7 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/income - Delete income
 export async function DELETE(request: NextRequest) {
   try {
+    await connectDB();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -85,13 +88,11 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const index = incomeRecords.findIndex((item) => item.id === id);
+    const deletedIncome = await Income.findOneAndDelete({ id: id });
 
-    if (index === -1) {
+    if (!deletedIncome) {
       return NextResponse.json({ error: "Income not found" }, { status: 404 });
     }
-
-    incomeRecords.splice(index, 1);
 
     return NextResponse.json({ success: true });
   } catch (error) {

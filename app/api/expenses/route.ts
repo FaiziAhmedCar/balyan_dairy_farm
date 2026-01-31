@@ -1,41 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  Expense,
-  ExpenseCategory,
-  PaymentMethod,
-} from "../../../app/types/expense";
-
-// In-memory storage for Vercel serverless environment
-let expenses: Expense[] = [];
-
-// Initialize with sample data if empty
-if (expenses.length === 0) {
-  expenses = [
-    {
-      id: "1",
-      date: "2026-01-31",
-      category: ExpenseCategory.FEED,
-      description: "best in this world",
-      amount: 500,
-      quantity: 10,
-      unit: "kg",
-      supplier: "ramu",
-      paymentMethod: PaymentMethod.CASH,
-      notes: "gk glnniun;h  ",
-      createdAt: "2026-01-31T19:15:50.207Z",
-      updatedAt: "2026-01-31T19:15:50.207Z",
-    },
-  ];
-}
+import connectDB from "../../../app/lib/mongoose";
+import Expense from "../../../app/models/Expense";
 
 // GET /api/expenses - Get all expenses
 export async function GET() {
   try {
-    return NextResponse.json(
-      expenses.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-      ),
-    );
+    await connectDB();
+    const expenses = await Expense.find({}).sort({ date: -1 });
+
+    return NextResponse.json(expenses);
   } catch (error) {
     console.error("Error fetching expenses:", error);
     return NextResponse.json(
@@ -48,18 +21,19 @@ export async function GET() {
 // POST /api/expenses - Create new expense
 export async function POST(request: NextRequest) {
   try {
+    await connectDB();
     const expenseData = await request.json();
 
-    const newExpense: Expense = {
+    const newExpense = new Expense({
       ...expenseData,
-      id: Date.now().toString(),
+      id: Date.now().toString(), // Keep string ID for frontend compatibility
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    };
+    });
 
-    expenses.push(newExpense);
+    const savedExpense = await newExpense.save();
 
-    return NextResponse.json(newExpense, { status: 201 });
+    return NextResponse.json(savedExpense, { status: 201 });
   } catch (error) {
     console.error("Error creating expense:", error);
     return NextResponse.json(
@@ -72,21 +46,25 @@ export async function POST(request: NextRequest) {
 // PUT /api/expenses - Update expense
 export async function PUT(request: NextRequest) {
   try {
+    await connectDB();
     const { id, ...updates } = await request.json();
 
-    const index = expenses.findIndex((expense) => expense.id === id);
-
-    if (index === -1) {
-      return NextResponse.json({ error: "Expense not found" }, { status: 404 });
-    }
-
-    expenses[index] = {
-      ...expenses[index],
+    const updateData = {
       ...updates,
       updatedAt: new Date().toISOString(),
     };
 
-    return NextResponse.json(expenses[index]);
+    const updatedExpense = await Expense.findOneAndUpdate(
+      { id: id },
+      { $set: updateData },
+      { new: true },
+    );
+
+    if (!updatedExpense) {
+      return NextResponse.json({ error: "Expense not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(updatedExpense);
   } catch (error) {
     console.error("Error updating expense:", error);
     return NextResponse.json(
@@ -99,6 +77,7 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/expenses - Delete expense
 export async function DELETE(request: NextRequest) {
   try {
+    await connectDB();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -109,13 +88,11 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const index = expenses.findIndex((expense) => expense.id === id);
+    const deletedExpense = await Expense.findOneAndDelete({ id: id });
 
-    if (index === -1) {
+    if (!deletedExpense) {
       return NextResponse.json({ error: "Expense not found" }, { status: 404 });
     }
-
-    expenses.splice(index, 1);
 
     return NextResponse.json({ success: true });
   } catch (error) {
