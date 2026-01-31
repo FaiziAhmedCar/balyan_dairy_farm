@@ -25,7 +25,11 @@ const paymentMethodLabels = {
   [PaymentMethod.CHEQUE]: "Cheque",
 };
 
-export default function IncomeForm({ onSubmit, onCancel, initialData }: IncomeFormProps) {
+export default function IncomeForm({
+  onSubmit,
+  onCancel,
+  initialData,
+}: IncomeFormProps) {
   const [formData, setFormData] = useState({
     date: initialData?.date || new Date().toISOString().split("T")[0],
     category: initialData?.category || IncomeCategory.MILK_SALE,
@@ -40,11 +44,13 @@ export default function IncomeForm({ onSubmit, onCancel, initialData }: IncomeFo
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const incomeData = {
       ...formData,
-      amount: parseFloat(formData.amount),
-      quantity: formData.quantity ? parseFloat(formData.quantity) : undefined,
+      amount: parseFloat(formData.amount.toString()),
+      quantity: formData.quantity
+        ? parseFloat(formData.quantity.toString())
+        : undefined,
       unit: formData.unit || undefined,
       customer: formData.customer || undefined,
       notes: formData.notes || undefined,
@@ -54,10 +60,12 @@ export default function IncomeForm({ onSubmit, onCancel, initialData }: IncomeFo
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -65,7 +73,7 @@ export default function IncomeForm({ onSubmit, onCancel, initialData }: IncomeFo
       <h2 className="text-2xl font-bold mb-6 text-black">
         {initialData ? "Edit Income" : "Add New Income"}
       </h2>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
