@@ -7,7 +7,7 @@ export const sampleExpenses: Expense[] = [
     date: "2024-01-15",
     category: ExpenseCategory.FEED,
     description: "Cattle feed purchase",
-    amount: 2500,
+    amount: 250000, // ₹2,50,000
     quantity: 500,
     unit: "kg",
     supplier: "Green Feed Supplies",
@@ -21,7 +21,7 @@ export const sampleExpenses: Expense[] = [
     date: "2024-01-18",
     category: ExpenseCategory.MEDICINE,
     description: "Vaccines and medications",
-    amount: 850,
+    amount: 85000, // ₹85,000
     supplier: "Veterinary Pharma",
     paymentMethod: PaymentMethod.CASH,
     notes: "Quarterly vaccine supply",
@@ -33,7 +33,7 @@ export const sampleExpenses: Expense[] = [
     date: "2024-01-20",
     category: ExpenseCategory.VETERINARY,
     description: "Regular health checkup",
-    amount: 300,
+    amount: 30000, // ₹30,000
     supplier: "Dr. Smith Veterinary Clinic",
     paymentMethod: PaymentMethod.CREDIT_CARD,
     notes: "Monthly checkup for all cattle",
@@ -45,7 +45,7 @@ export const sampleExpenses: Expense[] = [
     date: "2024-01-22",
     category: ExpenseCategory.EQUIPMENT,
     description: "Milking machine maintenance",
-    amount: 450,
+    amount: 45000, // ₹45,000
     supplier: "Dairy Equipment Services",
     paymentMethod: PaymentMethod.BANK_TRANSFER,
     notes: "Preventive maintenance",
@@ -57,7 +57,7 @@ export const sampleExpenses: Expense[] = [
     date: "2024-01-25",
     category: ExpenseCategory.LABOR,
     description: "Monthly wages",
-    amount: 3500,
+    amount: 350000, // ₹3,50,000
     paymentMethod: PaymentMethod.BANK_TRANSFER,
     notes: "Staff salaries for January",
     createdAt: "2024-01-25T16:00:00Z",
@@ -68,7 +68,7 @@ export const sampleExpenses: Expense[] = [
     date: "2024-01-28",
     category: ExpenseCategory.UTILITIES,
     description: "Electricity bill",
-    amount: 680,
+    amount: 68000, // ₹68,000
     supplier: "Power Company",
     paymentMethod: PaymentMethod.BANK_TRANSFER,
     notes: "Monthly electricity consumption",
