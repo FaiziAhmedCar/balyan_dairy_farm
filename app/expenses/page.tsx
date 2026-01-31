@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Expense } from "../types/expense";
-import { FileExpenseService } from "../data/fileExpenseService";
+import { ApiExpenseService } from "../data/apiExpenseService";
 import ExpenseForm from "../components/ExpenseForm";
 import ExpenseList from "../components/ExpenseList";
 import ExpenseReport from "../components/ExpenseReport";
@@ -14,7 +14,7 @@ export default function ExpensesPage() {
   const [activeTab, setActiveTab] = useState<"list" | "report">("list");
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const [expenseService] = useState(new FileExpenseService());
+  const [expenseService] = useState(new ApiExpenseService());
 
   useEffect(() => {
     setMounted(true);
