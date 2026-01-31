@@ -1,46 +1,50 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Expense, ExpenseCategory, PaymentMethod } from '../types/expense';
+import { useState } from "react";
+import { Expense, ExpenseCategory, PaymentMethod } from "../types/expense";
 
 interface ExpenseFormProps {
-  onSubmit: (expense: Omit<Expense, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onSubmit: (expense: Omit<Expense, "id" | "createdAt" | "updatedAt">) => void;
   onCancel: () => void;
   initialData?: Expense;
 }
 
 const categoryLabels = {
-  [ExpenseCategory.FEED]: 'Feed',
-  [ExpenseCategory.MEDICINE]: 'Medicine',
-  [ExpenseCategory.VETERINARY]: 'Veterinary',
-  [ExpenseCategory.EQUIPMENT]: 'Equipment',
-  [ExpenseCategory.LABOR]: 'Labor',
-  [ExpenseCategory.UTILITIES]: 'Utilities',
-  [ExpenseCategory.MAINTENANCE]: 'Maintenance',
-  [ExpenseCategory.TRANSPORTATION]: 'Transportation',
-  [ExpenseCategory.INSURANCE]: 'Insurance',
-  [ExpenseCategory.TAXES]: 'Taxes',
-  [ExpenseCategory.OTHER]: 'Other'
+  [ExpenseCategory.FEED]: "Feed",
+  [ExpenseCategory.MEDICINE]: "Medicine",
+  [ExpenseCategory.VETERINARY]: "Veterinary",
+  [ExpenseCategory.EQUIPMENT]: "Equipment",
+  [ExpenseCategory.LABOR]: "Labor",
+  [ExpenseCategory.UTILITIES]: "Utilities",
+  [ExpenseCategory.MAINTENANCE]: "Maintenance",
+  [ExpenseCategory.TRANSPORTATION]: "Transportation",
+  [ExpenseCategory.INSURANCE]: "Insurance",
+  [ExpenseCategory.TAXES]: "Taxes",
+  [ExpenseCategory.OTHER]: "Other",
 };
 
 const paymentMethodLabels = {
-  [PaymentMethod.CASH]: 'Cash',
-  [PaymentMethod.BANK_TRANSFER]: 'Bank Transfer',
-  [PaymentMethod.CREDIT_CARD]: 'Credit Card',
-  [PaymentMethod.CHECK]: 'Check'
+  [PaymentMethod.CASH]: "Cash",
+  [PaymentMethod.BANK_TRANSFER]: "Bank Transfer",
+  [PaymentMethod.CREDIT_CARD]: "Credit Card",
+  [PaymentMethod.CHECK]: "Check",
 };
 
-export default function ExpenseForm({ onSubmit, onCancel, initialData }: ExpenseFormProps) {
+export default function ExpenseForm({
+  onSubmit,
+  onCancel,
+  initialData,
+}: ExpenseFormProps) {
   const [formData, setFormData] = useState({
-    date: initialData?.date || new Date().toISOString().split('T')[0],
+    date: initialData?.date || new Date().toISOString().split("T")[0],
     category: initialData?.category || ExpenseCategory.FEED,
-    description: initialData?.description || '',
+    description: initialData?.description || "",
     amount: initialData?.amount || 0,
     quantity: initialData?.quantity || 0,
-    unit: initialData?.unit || '',
-    supplier: initialData?.supplier || '',
+    unit: initialData?.unit || "",
+    supplier: initialData?.supplier || "",
     paymentMethod: initialData?.paymentMethod || PaymentMethod.CASH,
-    notes: initialData?.notes || ''
+    notes: initialData?.notes || "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -48,20 +52,27 @@ export default function ExpenseForm({ onSubmit, onCancel, initialData }: Expense
     onSubmit(formData);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: name === 'amount' || name === 'quantity' ? parseFloat(value) || 0 : value
+      [name]:
+        name === "amount" || name === "quantity"
+          ? parseFloat(value) || 0
+          : value,
     }));
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold mb-6">
-        {initialData ? 'Edit Expense' : 'Add New Expense'}
+        {initialData ? "Edit Expense" : "Add New Expense"}
       </h2>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -90,7 +101,9 @@ export default function ExpenseForm({ onSubmit, onCancel, initialData }: Expense
               required
             >
               {Object.entries(categoryLabels).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
+                <option key={value} value={value}>
+                  {label}
+                </option>
               ))}
             </select>
           </div>
@@ -112,7 +125,7 @@ export default function ExpenseForm({ onSubmit, onCancel, initialData }: Expense
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Amount ($) *
+              Amount (₹) *
             </label>
             <input
               type="number"
@@ -139,7 +152,9 @@ export default function ExpenseForm({ onSubmit, onCancel, initialData }: Expense
               required
             >
               {Object.entries(paymentMethodLabels).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
+                <option key={value} value={value}>
+                  {label}
+                </option>
               ))}
             </select>
           </div>
@@ -214,7 +229,7 @@ export default function ExpenseForm({ onSubmit, onCancel, initialData }: Expense
             type="submit"
             className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
           >
-            {initialData ? 'Update Expense' : 'Add Expense'}
+            {initialData ? "Update Expense" : "Add Expense"}
           </button>
         </div>
       </form>
