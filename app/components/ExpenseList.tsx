@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Expense, ExpenseCategory, PaymentMethod } from '../types/expense';
+import { Expense, ExpenseCategory, PaymentMethod } from "../types/expense";
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -9,53 +9,58 @@ interface ExpenseListProps {
 }
 
 const categoryLabels = {
-  [ExpenseCategory.FEED]: 'Feed',
-  [ExpenseCategory.MEDICINE]: 'Medicine',
-  [ExpenseCategory.VETERINARY]: 'Veterinary',
-  [ExpenseCategory.EQUIPMENT]: 'Equipment',
-  [ExpenseCategory.LABOR]: 'Labor',
-  [ExpenseCategory.UTILITIES]: 'Utilities',
-  [ExpenseCategory.MAINTENANCE]: 'Maintenance',
-  [ExpenseCategory.TRANSPORTATION]: 'Transportation',
-  [ExpenseCategory.INSURANCE]: 'Insurance',
-  [ExpenseCategory.TAXES]: 'Taxes',
-  [ExpenseCategory.OTHER]: 'Other'
+  [ExpenseCategory.FEED]: "Feed",
+  [ExpenseCategory.MEDICINE]: "Medicine",
+  [ExpenseCategory.VETERINARY]: "Veterinary",
+  [ExpenseCategory.EQUIPMENT]: "Equipment",
+  [ExpenseCategory.LABOR]: "Labor",
+  [ExpenseCategory.UTILITIES]: "Utilities",
+  [ExpenseCategory.MAINTENANCE]: "Maintenance",
+  [ExpenseCategory.TRANSPORTATION]: "Transportation",
+  [ExpenseCategory.INSURANCE]: "Insurance",
+  [ExpenseCategory.TAXES]: "Taxes",
+  [ExpenseCategory.OTHER]: "Other",
 };
 
 const paymentMethodLabels = {
-  [PaymentMethod.CASH]: 'Cash',
-  [PaymentMethod.BANK_TRANSFER]: 'Bank Transfer',
-  [PaymentMethod.CREDIT_CARD]: 'Credit Card',
-  [PaymentMethod.CHECK]: 'Check'
+  [PaymentMethod.CASH]: "Cash",
+  [PaymentMethod.BANK_TRANSFER]: "Bank Transfer",
+  [PaymentMethod.CREDIT_CARD]: "Credit Card",
+  [PaymentMethod.CHECK]: "Check",
 };
 
 const categoryColors = {
-  [ExpenseCategory.FEED]: 'bg-green-100 text-green-800',
-  [ExpenseCategory.MEDICINE]: 'bg-red-100 text-red-800',
-  [ExpenseCategory.VETERINARY]: 'bg-blue-100 text-blue-800',
-  [ExpenseCategory.EQUIPMENT]: 'bg-purple-100 text-purple-800',
-  [ExpenseCategory.LABOR]: 'bg-yellow-100 text-yellow-800',
-  [ExpenseCategory.UTILITIES]: 'bg-indigo-100 text-indigo-800',
-  [ExpenseCategory.MAINTENANCE]: 'bg-orange-100 text-orange-800',
-  [ExpenseCategory.TRANSPORTATION]: 'bg-pink-100 text-pink-800',
-  [ExpenseCategory.INSURANCE]: 'bg-gray-100 text-gray-800',
-  [ExpenseCategory.TAXES]: 'bg-red-100 text-red-800',
-  [ExpenseCategory.OTHER]: 'bg-gray-100 text-gray-800'
+  [ExpenseCategory.FEED]: "bg-green-100 text-green-800",
+  [ExpenseCategory.MEDICINE]: "bg-red-100 text-red-800",
+  [ExpenseCategory.VETERINARY]: "bg-blue-100 text-blue-800",
+  [ExpenseCategory.EQUIPMENT]: "bg-purple-100 text-purple-800",
+  [ExpenseCategory.LABOR]: "bg-yellow-100 text-yellow-800",
+  [ExpenseCategory.UTILITIES]: "bg-indigo-100 text-indigo-800",
+  [ExpenseCategory.MAINTENANCE]: "bg-orange-100 text-orange-800",
+  [ExpenseCategory.TRANSPORTATION]: "bg-pink-100 text-pink-800",
+  [ExpenseCategory.INSURANCE]: "bg-gray-100 text-gray-800",
+  [ExpenseCategory.TAXES]: "bg-red-100 text-red-800",
+  [ExpenseCategory.OTHER]: "bg-gray-100 text-gray-800",
 };
 
-export default function ExpenseList({ expenses, onEdit, onDelete }: ExpenseListProps) {
+export default function ExpenseList({
+  expenses,
+  onEdit,
+  onDelete,
+}: ExpenseListProps) {
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -104,7 +109,9 @@ export default function ExpenseList({ expenses, onEdit, onDelete }: ExpenseListP
                   {formatDate(expense.date)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${categoryColors[expense.category]}`}>
+                  <span
+                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${categoryColors[expense.category]}`}
+                  >
                     {categoryLabels[expense.category]}
                   </span>
                 </td>
@@ -117,7 +124,9 @@ export default function ExpenseList({ expenses, onEdit, onDelete }: ExpenseListP
                       </div>
                     )}
                     {expense.notes && (
-                      <div className="text-gray-500 text-xs mt-1">{expense.notes}</div>
+                      <div className="text-gray-500 text-xs mt-1">
+                        {expense.notes}
+                      </div>
                     )}
                   </div>
                 </td>
@@ -128,7 +137,7 @@ export default function ExpenseList({ expenses, onEdit, onDelete }: ExpenseListP
                   {paymentMethodLabels[expense.paymentMethod]}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {expense.supplier || '-'}
+                  {expense.supplier || "-"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">

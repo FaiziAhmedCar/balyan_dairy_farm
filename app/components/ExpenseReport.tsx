@@ -52,9 +52,10 @@ export default function ExpenseReport({ expenses }: ExpenseReportProps) {
   const report = generateReport();
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
