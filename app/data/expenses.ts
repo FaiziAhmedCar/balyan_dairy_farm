@@ -31,7 +31,7 @@ export const sampleExpenses: Expense[] = [
   {
     id: "3",
     date: "2024-01-20",
-    category: ExpenseCategory.VETERINARY,
+    category: ExpenseCategory.DOCTOR,
     description: "Regular health checkup",
     amount: 30000, // ₹30,000
     supplier: "Dr. Smith Veterinary Clinic",
@@ -43,7 +43,7 @@ export const sampleExpenses: Expense[] = [
   {
     id: "4",
     date: "2024-01-22",
-    category: ExpenseCategory.EQUIPMENT,
+    category: ExpenseCategory.MAINTENANCE,
     description: "Milking machine maintenance",
     amount: 45000, // ₹45,000
     supplier: "Dairy Equipment Services",
@@ -66,7 +66,7 @@ export const sampleExpenses: Expense[] = [
   {
     id: "6",
     date: "2024-01-28",
-    category: ExpenseCategory.UTILITIES,
+    category: ExpenseCategory.MAINTENANCE,
     description: "Electricity bill",
     amount: 68000, // ₹68,000
     supplier: "Power Company",

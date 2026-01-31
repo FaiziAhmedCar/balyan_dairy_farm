@@ -32,7 +32,7 @@ export const sampleExpenses: Expense[] = [
   {
     id: "3",
     date: "2024-01-20",
-    category: ExpenseCategory.VETERINARY,
+    category: ExpenseCategory.DOCTOR,
     description: "Regular health checkup",
     amount: 30000,
     supplier: "Dr. Smith Veterinary Clinic",
@@ -44,7 +44,7 @@ export const sampleExpenses: Expense[] = [
   {
     id: "4",
     date: "2024-01-22",
-    category: ExpenseCategory.EQUIPMENT,
+    category: ExpenseCategory.MAINTENANCE,
     description: "Milking machine maintenance",
     amount: 45000,
     supplier: "Dairy Equipment Services",
@@ -67,7 +67,7 @@ export const sampleExpenses: Expense[] = [
   {
     id: "6",
     date: "2024-01-28",
-    category: ExpenseCategory.UTILITIES,
+    category: ExpenseCategory.MAINTENANCE,
     description: "Electricity bill",
     amount: 68000,
     supplier: "Power Company",
@@ -83,24 +83,20 @@ export class ExcelExpenseService {
   private readonly EXCEL_FILE_NAME = "balyan_dairy_farm_expenses.xlsx";
   private readonly SHEET_NAME = "Expenses";
 
-  private getExpensesFromExcel(): Expense[] {
+  private getExpensesFromStorage(): Expense[] {
     if (typeof window === "undefined") return [];
 
     try {
-      // Try to get from localStorage first (for client-side)
-      const storedData = localStorage.getItem(
-        "balyan_dairy_farm_expenses_excel",
-      );
-      if (storedData) {
-        return JSON.parse(storedData);
+      const stored = localStorage.getItem("balyan_dairy_farm_expenses_excel");
+      if (stored) {
+        return JSON.parse(stored);
       }
 
-      // Initialize with sample data
-      this.saveExpensesToExcel(sampleExpenses);
-      return sampleExpenses;
+      // Return empty array on server side, initialize with sample data only on client
+      return [];
     } catch (error) {
       console.error("Error reading expenses:", error);
-      return sampleExpenses;
+      return [];
     }
   }
 
@@ -159,21 +155,22 @@ export class ExcelExpenseService {
   }
 
   async getAllExpenses(): Promise<Expense[]> {
-    const expenses = this.getExpensesFromExcel();
+    const expenses = this.getExpensesFromStorage();
     return expenses.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      (a: Expense, b: Expense) =>
+        new Date(b.date).getTime() - new Date(a.date).getTime(),
     );
   }
 
   async getExpenseById(id: string): Promise<Expense | null> {
-    const expenses = this.getExpensesFromExcel();
-    return expenses.find((expense) => expense.id === id) || null;
+    const expenses = this.getExpensesFromStorage();
+    return expenses.find((expense: Expense) => expense.id === id) || null;
   }
 
   async createExpense(
     expense: Omit<Expense, "id" | "createdAt" | "updatedAt">,
   ): Promise<Expense> {
-    const expenses = this.getExpensesFromExcel();
+    const expenses = this.getExpensesFromStorage();
     const newExpense: Expense = {
       ...expense,
       id: Date.now().toString(),
@@ -189,8 +186,8 @@ export class ExcelExpenseService {
     id: string,
     updates: Partial<Expense>,
   ): Promise<Expense | null> {
-    const expenses = this.getExpensesFromExcel();
-    const index = expenses.findIndex((expense) => expense.id === id);
+    const expenses = this.getExpensesFromStorage();
+    const index = expenses.findIndex((expense: Expense) => expense.id === id);
     if (index === -1) return null;
 
     expenses[index] = {
@@ -203,8 +200,8 @@ export class ExcelExpenseService {
   }
 
   async deleteExpense(id: string): Promise<boolean> {
-    const expenses = this.getExpensesFromExcel();
-    const index = expenses.findIndex((expense) => expense.id === id);
+    const expenses = this.getExpensesFromStorage();
+    const index = expenses.findIndex((expense: Expense) => expense.id === id);
     if (index === -1) return false;
 
     expenses.splice(index, 1);
@@ -213,17 +210,18 @@ export class ExcelExpenseService {
   }
 
   async getExpensesByCategory(category: ExpenseCategory): Promise<Expense[]> {
-    const expenses = this.getExpensesFromExcel();
-    return expenses.filter((expense) => expense.category === category);
+    const expenses = this.getExpensesFromStorage();
+    return expenses.filter((expense: Expense) => expense.category === category);
   }
 
   async getExpensesByDateRange(
     startDate: string,
     endDate: string,
   ): Promise<Expense[]> {
-    const expenses = this.getExpensesFromExcel();
+    const expenses = this.getExpensesFromStorage();
     return expenses.filter(
-      (expense) => expense.date >= startDate && expense.date <= endDate,
+      (expense: Expense) =>
+        expense.date >= startDate && expense.date <= endDate,
     );
   }
 
@@ -232,7 +230,7 @@ export class ExcelExpenseService {
     if (typeof window === "undefined") return;
 
     try {
-      const expenses = this.getExpensesFromExcel();
+      const expenses = this.getExpensesFromStorage();
       const worksheet = this.convertToWorksheet(expenses);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, this.SHEET_NAME);
@@ -266,7 +264,7 @@ export class ExcelExpenseService {
 
   // Export to JSON for backup
   async exportExpenses(): Promise<string> {
-    const expenses = this.getExpensesFromExcel();
+    const expenses = this.getExpensesFromStorage();
     return JSON.stringify(expenses, null, 2);
   }
 
@@ -301,15 +299,22 @@ export class ExcelExpenseService {
   }
 
   // Get Excel file info
-  getExcelFileInfo() {
-    const expenses = this.getExpensesFromExcel();
+  getExcelFileInfo(): {
+    fileName: string;
+    sheetName: string;
+    totalRecords: number;
+    lastUpdated: number | null;
+  } {
+    const expenses = this.getExpensesFromStorage();
     return {
       fileName: this.EXCEL_FILE_NAME,
       sheetName: this.SHEET_NAME,
       totalRecords: expenses.length,
       lastUpdated:
         expenses.length > 0
-          ? Math.max(...expenses.map((e) => new Date(e.updatedAt).getTime()))
+          ? Math.max(
+              ...expenses.map((e: Expense) => new Date(e.updatedAt).getTime()),
+            )
           : null,
     };
   }

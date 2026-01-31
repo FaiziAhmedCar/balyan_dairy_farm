@@ -62,14 +62,9 @@ export default function ExpenseReport({ expenses }: ExpenseReportProps) {
   const categoryLabels = {
     [ExpenseCategory.FEED]: "Feed",
     [ExpenseCategory.MEDICINE]: "Medicine",
-    [ExpenseCategory.VETERINARY]: "Veterinary",
-    [ExpenseCategory.EQUIPMENT]: "Equipment",
+    [ExpenseCategory.DOCTOR]: "Doctor",
     [ExpenseCategory.LABOR]: "Labor",
-    [ExpenseCategory.UTILITIES]: "Utilities",
     [ExpenseCategory.MAINTENANCE]: "Maintenance",
-    [ExpenseCategory.TRANSPORTATION]: "Transportation",
-    [ExpenseCategory.INSURANCE]: "Insurance",
-    [ExpenseCategory.TAXES]: "Taxes",
     [ExpenseCategory.OTHER]: "Other",
   };
 

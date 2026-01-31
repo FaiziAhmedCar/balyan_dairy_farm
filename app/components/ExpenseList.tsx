@@ -11,14 +11,9 @@ interface ExpenseListProps {
 const categoryLabels = {
   [ExpenseCategory.FEED]: "Feed",
   [ExpenseCategory.MEDICINE]: "Medicine",
-  [ExpenseCategory.VETERINARY]: "Veterinary",
-  [ExpenseCategory.EQUIPMENT]: "Equipment",
+  [ExpenseCategory.DOCTOR]: "Doctor",
   [ExpenseCategory.LABOR]: "Labor",
-  [ExpenseCategory.UTILITIES]: "Utilities",
   [ExpenseCategory.MAINTENANCE]: "Maintenance",
-  [ExpenseCategory.TRANSPORTATION]: "Transportation",
-  [ExpenseCategory.INSURANCE]: "Insurance",
-  [ExpenseCategory.TAXES]: "Taxes",
   [ExpenseCategory.OTHER]: "Other",
 };
 
@@ -32,14 +27,9 @@ const paymentMethodLabels = {
 const categoryColors = {
   [ExpenseCategory.FEED]: "bg-green-100 text-green-800",
   [ExpenseCategory.MEDICINE]: "bg-red-100 text-red-800",
-  [ExpenseCategory.VETERINARY]: "bg-blue-100 text-blue-800",
-  [ExpenseCategory.EQUIPMENT]: "bg-purple-100 text-purple-800",
+  [ExpenseCategory.DOCTOR]: "bg-blue-100 text-blue-800",
   [ExpenseCategory.LABOR]: "bg-yellow-100 text-yellow-800",
-  [ExpenseCategory.UTILITIES]: "bg-indigo-100 text-indigo-800",
   [ExpenseCategory.MAINTENANCE]: "bg-orange-100 text-orange-800",
-  [ExpenseCategory.TRANSPORTATION]: "bg-pink-100 text-pink-800",
-  [ExpenseCategory.INSURANCE]: "bg-gray-100 text-gray-800",
-  [ExpenseCategory.TAXES]: "bg-red-100 text-red-800",
   [ExpenseCategory.OTHER]: "bg-gray-100 text-gray-800",
 };
 

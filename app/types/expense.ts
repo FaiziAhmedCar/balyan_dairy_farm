@@ -16,14 +16,9 @@ export interface Expense {
 export enum ExpenseCategory {
   FEED = 'feed',
   MEDICINE = 'medicine',
-  VETERINARY = 'veterinary',
-  EQUIPMENT = 'equipment',
+  DOCTOR = 'doctor',
   LABOR = 'labor',
-  UTILITIES = 'utilities',
   MAINTENANCE = 'maintenance',
-  TRANSPORTATION = 'transportation',
-  INSURANCE = 'insurance',
-  TAXES = 'taxes',
   OTHER = 'other'
 }
 
