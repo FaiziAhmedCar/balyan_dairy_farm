@@ -1,18 +1,18 @@
-import { Expense } from '../types/expense';
+import { Expense } from "../types/expense";
 
 // API-based expense service for client-side usage
 export class ApiExpenseService {
-  private readonly API_BASE = '/api/expenses';
+  private readonly API_BASE = "/api/expenses";
 
   async getAllExpenses(): Promise<Expense[]> {
     try {
       const response = await fetch(this.API_BASE);
       if (!response.ok) {
-        throw new Error('Failed to fetch expenses');
+        throw new Error("Failed to fetch expenses");
       }
       return await response.json();
     } catch (error) {
-      console.error('Error fetching expenses:', error);
+      console.error("Error fetching expenses:", error);
       return [];
     }
   }
@@ -21,54 +21,61 @@ export class ApiExpenseService {
     try {
       const response = await fetch(`${this.API_BASE}?id=${id}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch expense');
+        throw new Error("Failed to fetch expense");
       }
       const expenses = await response.json();
-      return Array.isArray(expenses) ? expenses.find(expense => expense.id === id) || null : null;
+      return Array.isArray(expenses)
+        ? expenses.find((expense) => expense.id === id) || null
+        : null;
     } catch (error) {
-      console.error('Error fetching expense:', error);
+      console.error("Error fetching expense:", error);
       return null;
     }
   }
 
-  async createExpense(expense: Omit<Expense, 'id' | 'createdAt' | 'updatedAt'>): Promise<Expense> {
+  async createExpense(
+    expense: Omit<Expense, "id" | "createdAt" | "updatedAt">,
+  ): Promise<Expense> {
     try {
       const response = await fetch(this.API_BASE, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(expense),
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to create expense');
+        throw new Error("Failed to create expense");
       }
-      
+
       return await response.json();
     } catch (error) {
-      console.error('Error creating expense:', error);
+      console.error("Error creating expense:", error);
       throw error;
     }
   }
 
-  async updateExpense(id: string, updates: Partial<Expense>): Promise<Expense | null> {
+  async updateExpense(
+    id: string,
+    updates: Partial<Expense>,
+  ): Promise<Expense | null> {
     try {
       const response = await fetch(this.API_BASE, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ id, ...updates }),
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to update expense');
+        throw new Error("Failed to update expense");
       }
-      
+
       return await response.json();
     } catch (error) {
-      console.error('Error updating expense:', error);
+      console.error("Error updating expense:", error);
       throw error;
     }
   }
@@ -76,17 +83,17 @@ export class ApiExpenseService {
   async deleteExpense(id: string): Promise<boolean> {
     try {
       const response = await fetch(`${this.API_BASE}?id=${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to delete expense');
+        throw new Error("Failed to delete expense");
       }
-      
+
       const result = await response.json();
       return result.success;
     } catch (error) {
-      console.error('Error deleting expense:', error);
+      console.error("Error deleting expense:", error);
       throw error;
     }
   }
@@ -94,22 +101,56 @@ export class ApiExpenseService {
   async getExpensesByCategory(category: string): Promise<Expense[]> {
     try {
       const expenses = await this.getAllExpenses();
-      return expenses.filter(expense => expense.category === category);
+      return expenses.filter((expense) => expense.category === category);
     } catch (error) {
-      console.error('Error fetching expenses by category:', error);
+      console.error("Error fetching expenses by category:", error);
       return [];
     }
   }
 
-  async getExpensesByDateRange(startDate: string, endDate: string): Promise<Expense[]> {
+  async getExpensesByDateRange(
+    startDate: string,
+    endDate: string,
+  ): Promise<Expense[]> {
     try {
       const expenses = await this.getAllExpenses();
-      return expenses.filter(expense => 
-        expense.date >= startDate && expense.date <= endDate
+      return expenses.filter(
+        (expense) => expense.date >= startDate && expense.date <= endDate,
       );
     } catch (error) {
-      console.error('Error fetching expenses by date range:', error);
+      console.error("Error fetching expenses by date range:", error);
       return [];
+    }
+  }
+
+  // Export to Excel file
+  async exportToExcel(): Promise<void> {
+    try {
+      const response = await fetch("/api/expenses/export");
+
+      if (!response.ok) {
+        throw new Error("Failed to export expenses");
+      }
+
+      // Get the blob from response
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `balyan_dairy_farm_expenses_${new Date().toISOString().split("T")[0]}.xlsx`;
+
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
+      throw error;
     }
   }
 
@@ -119,7 +160,7 @@ export class ApiExpenseService {
       const expenses = await this.getAllExpenses();
       return JSON.stringify(expenses, null, 2);
     } catch (error) {
-      console.error('Error exporting expenses:', error);
+      console.error("Error exporting expenses:", error);
       throw error;
     }
   }
@@ -137,7 +178,7 @@ export class ApiExpenseService {
       }
       return false;
     } catch (error) {
-      console.error('Error importing expenses:', error);
+      console.error("Error importing expenses:", error);
       return false;
     }
   }
@@ -149,7 +190,7 @@ export class ApiExpenseService {
         await this.deleteExpense(expense.id);
       }
     } catch (error) {
-      console.error('Error clearing expenses:', error);
+      console.error("Error clearing expenses:", error);
       throw error;
     }
   }
@@ -159,22 +200,27 @@ export class ApiExpenseService {
     try {
       const expenses = await this.getAllExpenses();
       return {
-        fileName: 'expenses.json',
-        filePath: '/data/expenses.json',
+        fileName: "expenses.json",
+        filePath: "/data/expenses.json",
         totalRecords: expenses.length,
-        lastUpdated: expenses.length > 0 
-          ? Math.max(...expenses.map((e: Expense) => new Date(e.updatedAt).getTime()))
-          : null,
-        fileModified: new Date().getTime()
+        lastUpdated:
+          expenses.length > 0
+            ? Math.max(
+                ...expenses.map((e: Expense) =>
+                  new Date(e.updatedAt).getTime(),
+                ),
+              )
+            : null,
+        fileModified: new Date().getTime(),
       };
     } catch (error) {
-      console.error('Error getting file info:', error);
+      console.error("Error getting file info:", error);
       return {
-        fileName: 'expenses.json',
-        filePath: '/data/expenses.json',
+        fileName: "expenses.json",
+        filePath: "/data/expenses.json",
         totalRecords: 0,
         lastUpdated: null,
-        fileModified: null
+        fileModified: null,
       };
     }
   }

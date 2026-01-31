@@ -6,6 +6,7 @@ import {
 } from "../../../app/types/expense";
 import fs from "fs";
 import path from "path";
+import * as XLSX from "xlsx";
 
 // Sample data for demonstration
 const sampleExpenses: Expense[] = [
