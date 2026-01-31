@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "date": "2026-01-31",
+    "category": "feed",
+    "description": "best in this world",
+    "amount": 500,
+    "quantity": 10,
+    "unit": "kg",
+    "supplier": "ramu",
+    "paymentMethod": "cash",
+    "notes": "gk glnniun;h  ",
+    "id": "1769886950207",
+    "createdAt": "2026-01-31T19:15:50.207Z",
+    "updatedAt": "2026-01-31T19:15:50.207Z"
+  }
+]
