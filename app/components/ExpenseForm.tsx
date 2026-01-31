@@ -69,7 +69,7 @@ export default function ExpenseForm({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold mb-6">
+      <h2 className="text-2xl font-bold mb-6 text-black ">
         {initialData ? "Edit Expense" : "Add New Expense"}
       </h2>
 
@@ -84,7 +84,7 @@ export default function ExpenseForm({
               name="date"
               value={formData.date}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               required
             />
           </div>
@@ -97,7 +97,7 @@ export default function ExpenseForm({
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               required
             >
               {Object.entries(categoryLabels).map(([value, label]) => (
@@ -117,7 +117,7 @@ export default function ExpenseForm({
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="Enter expense description"
               required
             />
@@ -134,7 +134,7 @@ export default function ExpenseForm({
               onChange={handleChange}
               step="0.01"
               min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="0.00"
               required
             />
@@ -148,7 +148,7 @@ export default function ExpenseForm({
               name="paymentMethod"
               value={formData.paymentMethod}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               required
             >
               {Object.entries(paymentMethodLabels).map(([value, label]) => (
@@ -169,7 +169,7 @@ export default function ExpenseForm({
               value={formData.quantity}
               onChange={handleChange}
               min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="0"
             />
           </div>
@@ -183,7 +183,7 @@ export default function ExpenseForm({
               name="unit"
               value={formData.unit}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="e.g., kg, liters, items"
             />
           </div>
@@ -197,7 +197,7 @@ export default function ExpenseForm({
               name="supplier"
               value={formData.supplier}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="Supplier name"
             />
           </div>
@@ -211,7 +211,7 @@ export default function ExpenseForm({
               value={formData.notes}
               onChange={handleChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="Additional notes..."
             />
           </div>
