@@ -59,9 +59,10 @@ export class FileExpenseService {
         fs.mkdirSync(this.DATA_DIR, { recursive: true });
       }
 
-      // Create expenses file if it doesn't exist
+      // Only create expenses file if it doesn't exist, but don't add sample data
       if (!fs.existsSync(this.EXPENSES_FILE)) {
-        this.saveExpensesToFileSync(sampleExpenses);
+        // Create empty file instead of populating with sample data
+        this.saveExpensesToFileSync([]);
       }
     } catch (error) {
       console.error("Error ensuring data directory:", error);
@@ -75,10 +76,11 @@ export class FileExpenseService {
         const expenses = JSON.parse(data);
         return Array.isArray(expenses) ? expenses : [];
       }
-      return sampleExpenses;
+      // Return empty array if file doesn't exist
+      return [];
     } catch (error) {
       console.error("Error reading expenses from file:", error);
-      return sampleExpenses;
+      return [];
     }
   }
 

@@ -1,23 +1,20 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Expense, ExpenseCategory, PaymentMethod } from "../types/expense";
-import { ExcelExpenseService } from "../data/excelExpenseService";
+import { Expense } from "../types/expense";
+import { FileExpenseService } from "../data/fileExpenseService";
 import ExpenseForm from "../components/ExpenseForm";
 import ExpenseList from "../components/ExpenseList";
 import ExpenseReport from "../components/ExpenseReport";
-import ExcelFileManager from "../components/ExcelFileManager";
 
 export default function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
-  const [activeTab, setActiveTab] = useState<"list" | "report" | "excel">(
-    "list",
-  );
+  const [activeTab, setActiveTab] = useState<"list" | "report">("list");
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const [expenseService] = useState(new ExcelExpenseService());
+  const [expenseService] = useState(new FileExpenseService());
 
   useEffect(() => {
     setMounted(true);
@@ -29,50 +26,7 @@ export default function ExpensesPage() {
     try {
       setLoading(true);
       const data = await expenseService.getAllExpenses();
-
-      // Initialize with sample data if no data exists
-      if (data.length === 0) {
-        const sampleData = [
-          {
-            date: "2024-01-15",
-            category: ExpenseCategory.FEED,
-            description: "Cattle feed purchase",
-            amount: 250000,
-            quantity: 500,
-            unit: "kg",
-            supplier: "Green Feed Supplies",
-            paymentMethod: PaymentMethod.BANK_TRANSFER,
-            notes: "Monthly feed supply",
-          },
-          {
-            date: "2024-01-18",
-            category: ExpenseCategory.MEDICINE,
-            description: "Vaccines and medications",
-            amount: 85000,
-            supplier: "Veterinary Pharma",
-            paymentMethod: PaymentMethod.CASH,
-            notes: "Quarterly vaccine supply",
-          },
-          {
-            date: "2024-01-20",
-            category: ExpenseCategory.DOCTOR,
-            description: "Regular health checkup",
-            amount: 30000,
-            supplier: "Dr. Smith Veterinary Clinic",
-            paymentMethod: PaymentMethod.CREDIT_CARD,
-            notes: "Monthly checkup for all cattle",
-          },
-        ];
-
-        for (const expense of sampleData) {
-          await expenseService.createExpense(expense);
-        }
-
-        const newData = await expenseService.getAllExpenses();
-        setExpenses(newData);
-      } else {
-        setExpenses(data);
-      }
+      setExpenses(data);
     } catch (error) {
       console.error("Failed to load expenses:", error);
     } finally {
@@ -134,20 +88,6 @@ export default function ExpensesPage() {
     setEditingExpense(null);
   };
 
-  const handleDownloadExcel = () => {
-    expenseService.downloadExcelFile();
-  };
-
-  const handleUploadExcel = async (file: File): Promise<boolean> => {
-    const success = await expenseService.uploadExcelFile(file);
-    if (success) {
-      await loadExpenses();
-    }
-    return success;
-  };
-
-  const fileInfo = expenseService.getExcelFileInfo();
-
   if (!mounted || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -187,23 +127,13 @@ export default function ExpensesPage() {
             </button>
             <button
               onClick={() => setActiveTab("report")}
-              className={`px-4 py-2 font-medium transition-colors ${
+              className={`px-4 py-2 rounded-r-lg font-medium transition-colors ${
                 activeTab === "report"
                   ? "bg-blue-600 text-white"
                   : "text-gray-700 hover:text-gray-900"
               }`}
             >
               Reports
-            </button>
-            <button
-              onClick={() => setActiveTab("excel")}
-              className={`px-4 py-2 rounded-r-lg font-medium transition-colors ${
-                activeTab === "excel"
-                  ? "bg-blue-600 text-white"
-                  : "text-gray-700 hover:text-gray-900"
-              }`}
-            >
-              Excel
             </button>
           </div>
 
@@ -235,14 +165,8 @@ export default function ExpensesPage() {
             onEdit={handleEditClick}
             onDelete={handleDeleteExpense}
           />
-        ) : activeTab === "report" ? (
-          <ExpenseReport expenses={expenses} />
         ) : (
-          <ExcelFileManager
-            onDownloadExcel={handleDownloadExcel}
-            onUploadExcel={handleUploadExcel}
-            fileInfo={fileInfo}
-          />
+          <ExpenseReport expenses={expenses} />
         )}
       </div>
     </div>
