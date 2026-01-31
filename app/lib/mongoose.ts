@@ -10,7 +10,7 @@ if (!MONGODB_URI) {
 
 // Global variable to store the connection
 declare global {
-  var mongoose:
+  var mongooseCache:
     | {
         conn: typeof mongoose | null;
         promise: Promise<typeof mongoose> | null;
@@ -18,10 +18,10 @@ declare global {
     | undefined;
 }
 
-const cached = global.mongoose || { conn: null, promise: null };
+const cached = global.mongooseCache || { conn: null, promise: null };
 
-if (!global.mongoose) {
-  global.mongoose = cached;
+if (!global.mongooseCache) {
+  global.mongooseCache = cached;
 }
 
 async function connectDB() {
