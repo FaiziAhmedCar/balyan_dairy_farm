@@ -2,18 +2,21 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Expense } from "../types/expense";
-import { ExpenseService } from "../data/expenses";
+import { ExcelExpenseService } from "../data/excelExpenseService";
 import ExpenseForm from "../components/ExpenseForm";
 import ExpenseList from "../components/ExpenseList";
 import ExpenseReport from "../components/ExpenseReport";
+import ExcelFileManager from "../components/ExcelFileManager";
 
 export default function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
-  const [activeTab, setActiveTab] = useState<"list" | "report">("list");
+  const [activeTab, setActiveTab] = useState<"list" | "report" | "excel">(
+    "list",
+  );
   const [loading, setLoading] = useState(true);
-  const [expenseService] = useState(new ExpenseService());
+  const [expenseService] = useState(new ExcelExpenseService());
 
   const loadExpenses = useCallback(async () => {
     try {
@@ -79,6 +82,20 @@ export default function ExpensesPage() {
     setEditingExpense(null);
   };
 
+  const handleDownloadExcel = () => {
+    expenseService.downloadExcelFile();
+  };
+
+  const handleUploadExcel = async (file: File): Promise<boolean> => {
+    const success = await expenseService.uploadExcelFile(file);
+    if (success) {
+      await loadExpenses();
+    }
+    return success;
+  };
+
+  const fileInfo = expenseService.getExcelFileInfo();
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -118,13 +135,23 @@ export default function ExpensesPage() {
             </button>
             <button
               onClick={() => setActiveTab("report")}
-              className={`px-4 py-2 rounded-r-lg font-medium transition-colors ${
+              className={`px-4 py-2 font-medium transition-colors ${
                 activeTab === "report"
                   ? "bg-blue-600 text-white"
                   : "text-gray-700 hover:text-gray-900"
               }`}
             >
               Reports
+            </button>
+            <button
+              onClick={() => setActiveTab("excel")}
+              className={`px-4 py-2 rounded-r-lg font-medium transition-colors ${
+                activeTab === "excel"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-700 hover:text-gray-900"
+              }`}
+            >
+              Excel
             </button>
           </div>
 
@@ -156,8 +183,14 @@ export default function ExpensesPage() {
             onEdit={handleEditClick}
             onDelete={handleDeleteExpense}
           />
-        ) : (
+        ) : activeTab === "report" ? (
           <ExpenseReport expenses={expenses} />
+        ) : (
+          <ExcelFileManager
+            onDownloadExcel={handleDownloadExcel}
+            onUploadExcel={handleUploadExcel}
+            fileInfo={fileInfo}
+          />
         )}
       </div>
     </div>
