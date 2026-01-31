@@ -1,0 +1,16 @@
+[
+  {
+    "date": "2026-01-31",
+    "category": "milk_sale",
+    "description": "mast pese diye h",
+    "amount": 1000,
+    "quantity": 50,
+    "unit": "kg",
+    "customer": "lala",
+    "paymentMethod": "cash",
+    "notes": "001",
+    "id": "1769887786039",
+    "createdAt": "2026-01-31T19:29:46.039Z",
+    "updatedAt": "2026-01-31T19:29:46.039Z"
+  }
+]

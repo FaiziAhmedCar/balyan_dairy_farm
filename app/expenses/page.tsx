@@ -2,19 +2,30 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Expense } from "../types/expense";
+import { Income } from "../types/income";
 import { ApiExpenseService } from "../data/apiExpenseService";
+import { ApiIncomeService } from "../data/apiIncomeService";
 import ExpenseForm from "../components/ExpenseForm";
+import IncomeForm from "../components/IncomeForm";
 import ExpenseList from "../components/ExpenseList";
+import IncomeList from "../components/IncomeList";
 import ExpenseReport from "../components/ExpenseReport";
+import FinancialSummary from "../components/FinancialSummary";
 
 export default function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [showForm, setShowForm] = useState(false);
+  const [income, setIncome] = useState<Income[]>([]);
+  const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [showIncomeForm, setShowIncomeForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
-  const [activeTab, setActiveTab] = useState<"list" | "report">("list");
+  const [editingIncome, setEditingIncome] = useState<Income | null>(null);
+  const [activeTab, setActiveTab] = useState<
+    "expenses" | "income" | "summary" | "report"
+  >("expenses");
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [expenseService] = useState(new ApiExpenseService());
+  const [incomeService] = useState(new ApiIncomeService());
 
   useEffect(() => {
     setMounted(true);
@@ -25,14 +36,18 @@ export default function ExpensesPage() {
 
     try {
       setLoading(true);
-      const data = await expenseService.getAllExpenses();
-      setExpenses(data);
+      const [expensesData, incomeData] = await Promise.all([
+        expenseService.getAllExpenses(),
+        incomeService.getAllIncome(),
+      ]);
+      setExpenses(expensesData);
+      setIncome(incomeData);
     } catch (error) {
-      console.error("Failed to load expenses:", error);
+      console.error("Failed to load data:", error);
     } finally {
       setLoading(false);
     }
-  }, [expenseService, mounted]);
+  }, [expenseService, incomeService, mounted]);
 
   useEffect(() => {
     if (mounted) {
@@ -41,29 +56,31 @@ export default function ExpensesPage() {
   }, [loadExpenses, mounted]);
 
   const handleAddExpense = async (
-    expenseData: Omit<Expense, "id" | "createdAt" | "updatedAt">,
+    expense: Omit<Expense, "id" | "createdAt" | "updatedAt">,
   ) => {
     try {
-      await expenseService.createExpense(expenseData);
+      await expenseService.createExpense(expense);
       await loadExpenses();
-      setShowForm(false);
+      setShowExpenseForm(false);
     } catch (error) {
       console.error("Failed to add expense:", error);
+      alert("Failed to add expense. Please try again.");
     }
   };
 
   const handleEditExpense = async (
-    expenseData: Omit<Expense, "id" | "createdAt" | "updatedAt">,
+    expense: Omit<Expense, "id" | "createdAt" | "updatedAt">,
   ) => {
     if (!editingExpense) return;
 
     try {
-      await expenseService.updateExpense(editingExpense.id, expenseData);
+      await expenseService.updateExpense(editingExpense.id, expense);
       await loadExpenses();
+      setShowExpenseForm(false);
       setEditingExpense(null);
-      setShowForm(false);
     } catch (error) {
       console.error("Failed to update expense:", error);
+      alert("Failed to update expense. Please try again.");
     }
   };
 
@@ -75,17 +92,69 @@ export default function ExpensesPage() {
       await loadExpenses();
     } catch (error) {
       console.error("Failed to delete expense:", error);
+      alert("Failed to delete expense. Please try again.");
+    }
+  };
+
+  const handleAddIncome = async (
+    income: Omit<Income, "id" | "createdAt" | "updatedAt">,
+  ) => {
+    try {
+      await incomeService.createIncome(income);
+      await loadExpenses();
+      setShowIncomeForm(false);
+    } catch (error) {
+      console.error("Failed to add income:", error);
+      alert("Failed to add income. Please try again.");
+    }
+  };
+
+  const handleEditIncome = async (
+    income: Omit<Income, "id" | "createdAt" | "updatedAt">,
+  ) => {
+    if (!editingIncome) return;
+
+    try {
+      await incomeService.updateIncome(editingIncome.id, income);
+      await loadExpenses();
+      setShowIncomeForm(false);
+      setEditingIncome(null);
+    } catch (error) {
+      console.error("Failed to update income:", error);
+      alert("Failed to update income. Please try again.");
+    }
+  };
+
+  const handleDeleteIncome = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this income entry?")) return;
+
+    try {
+      await incomeService.deleteIncome(id);
+      await loadExpenses();
+    } catch (error) {
+      console.error("Failed to delete income:", error);
+      alert("Failed to delete income. Please try again.");
     }
   };
 
   const handleEditClick = (expense: Expense) => {
     setEditingExpense(expense);
-    setShowForm(true);
+    setShowExpenseForm(true);
   };
 
-  const handleCancelForm = () => {
-    setShowForm(false);
+  const handleEditIncomeClick = (income: Income) => {
+    setEditingIncome(income);
+    setShowIncomeForm(true);
+  };
+
+  const handleCancelExpenseForm = () => {
+    setShowExpenseForm(false);
     setEditingExpense(null);
+  };
+
+  const handleCancelIncomeForm = () => {
+    setShowIncomeForm(false);
+    setEditingIncome(null);
   };
 
   const handleExportExcel = async () => {
@@ -114,10 +183,10 @@ export default function ExpensesPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Dairy Farm Expenses
+            Dairy Farm Management
           </h1>
           <p className="mt-2 text-gray-600">
-            Manage and track your dairy farm expenses
+            Track expenses, income, and calculate your earnings
           </p>
         </div>
 
@@ -125,14 +194,34 @@ export default function ExpensesPage() {
         <div className="mb-6 flex justify-between items-center">
           <div className="flex space-x-1 bg-white rounded-lg shadow">
             <button
-              onClick={() => setActiveTab("list")}
+              onClick={() => setActiveTab("expenses")}
               className={`px-4 py-2 rounded-l-lg font-medium transition-colors ${
-                activeTab === "list"
+                activeTab === "expenses"
                   ? "bg-blue-600 text-white"
                   : "text-gray-700 hover:text-gray-900"
               }`}
             >
               Expenses
+            </button>
+            <button
+              onClick={() => setActiveTab("income")}
+              className={`px-4 py-2 font-medium transition-colors ${
+                activeTab === "income"
+                  ? "bg-green-600 text-white"
+                  : "text-gray-700 hover:text-gray-900"
+              }`}
+            >
+              Income
+            </button>
+            <button
+              onClick={() => setActiveTab("summary")}
+              className={`px-4 py-2 font-medium transition-colors ${
+                activeTab === "summary"
+                  ? "bg-purple-600 text-white"
+                  : "text-gray-700 hover:text-gray-900"
+              }`}
+            >
+              Summary
             </button>
             <button
               onClick={() => setActiveTab("report")}
@@ -146,54 +235,81 @@ export default function ExpensesPage() {
             </button>
           </div>
 
-          <button
-            onClick={() => setShowForm(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-          >
-            Add Expense
-          </button>
-
-          <button
-            onClick={handleExportExcel}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center"
-          >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div className="flex space-x-3">
+            <button
+              onClick={() => setShowExpenseForm(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            Export Excel
-          </button>
+              Add Expense
+            </button>
+            <button
+              onClick={() => setShowIncomeForm(true)}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+            >
+              Add Income
+            </button>
+            <button
+              onClick={handleExportExcel}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              Export Excel
+            </button>
+          </div>
         </div>
 
-        {/* Form Modal */}
-        {showForm && (
+        {/* Forms */}
+        {showExpenseForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <ExpenseForm
                 onSubmit={editingExpense ? handleEditExpense : handleAddExpense}
-                onCancel={handleCancelForm}
+                onCancel={handleCancelExpenseForm}
                 initialData={editingExpense || undefined}
               />
             </div>
           </div>
         )}
 
+        {showIncomeForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <IncomeForm
+                onSubmit={editingIncome ? handleEditIncome : handleAddIncome}
+                onCancel={handleCancelIncomeForm}
+                initialData={editingIncome || undefined}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Content */}
-        {activeTab === "list" ? (
+        {activeTab === "expenses" ? (
           <ExpenseList
             expenses={expenses}
             onEdit={handleEditClick}
             onDelete={handleDeleteExpense}
           />
+        ) : activeTab === "income" ? (
+          <IncomeList
+            income={income}
+            onEdit={handleEditIncomeClick}
+            onDelete={handleDeleteIncome}
+          />
+        ) : activeTab === "summary" ? (
+          <FinancialSummary expenses={expenses} income={income} />
         ) : (
           <ExpenseReport expenses={expenses} />
         )}
