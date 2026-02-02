@@ -21,7 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = (password: string): boolean => {
-    const staticPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123'
+    const staticPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || '123321'
     if (password === staticPassword) {
       setIsAuthenticated(true)
       localStorage.setItem('balyan_auth', 'true')
